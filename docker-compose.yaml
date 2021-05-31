@@ -5,6 +5,9 @@ services:
         build:
             dockerfile: Dockerfile
             context: ./server
+        ports:
+            - 80:5000
+            - 5000:5000
         volumes:
             - /app/node_modules
             - ./server:/app
