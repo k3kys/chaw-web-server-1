@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../../errors';
+import StatusCodes from "http-status-codes"
 
 export const errorHandler = (
   err: Error,
@@ -12,7 +13,7 @@ export const errorHandler = (
   }
 
   console.error(err);
-  res.status(400).send({
+  res.status(StatusCodes.BAD_REQUEST).send({
     errors: [{ message: 'Something went wrong' }],
   });
 };
