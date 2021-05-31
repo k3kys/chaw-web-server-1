@@ -12,6 +12,10 @@ app.use(cookieParser())
 app.set('trust proxy', true);
 app.use(cookieSession({ signed: false }))
 
+app.get('/', (req, res) => {
+    res.send('web server 1')    
+})
+
 app.use("/api/users", userRouter)
 
 app.get("*", (req, res) => {
