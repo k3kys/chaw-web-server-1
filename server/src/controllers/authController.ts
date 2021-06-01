@@ -90,7 +90,10 @@ export const currentUser = (
 
 export const forgotPassword = (
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await User.findOne({ email: req.body.email });
+        
+        const { email } = req.body
+
+        const user = await User.findOne({ email });
 
         if (!user) {
             throw new NotFoundError()
