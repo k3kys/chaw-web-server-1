@@ -154,7 +154,7 @@ export const sendEmail = catchAsync(
 
         const gmail = new Gmailer()
 
-        gmail.sendMessage({
+        const mailsend = gmail.sendMessage({
             email: email,
             subject: "Chaw: 웹메일 인증을 해주세요.",
             message
