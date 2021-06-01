@@ -44,6 +44,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        400:
+          description: "message: Email in use, 이미 존재하는 유저일 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
   
   /api/users/signin:
     post:
@@ -72,6 +86,34 @@ paths:
                     type: string
                   password:
                     type: string
+        400:
+          description: "message: Invalid credentials, 이미 존재하는 유저일 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        400-1(400):
+          description: "message: Password is not matched, 패스워드가 틀린 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
 
   /api/users/signout:
     post:
@@ -106,6 +148,20 @@ paths:
                 properties:
                   resetToken:
                     type: string
+        400:
+          description: "message: user not found, 작성한 이메일이 가입된 이메일이 아닌 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
 
   /api/users/resetPassword/:resetToken:
     post:
@@ -132,6 +188,20 @@ paths:
       responses:
         200:
           description: 비밀번호 리셋 성공
+        400:
+          description: "message: Token is invalid or has expired, forgotPassowrd를 통해 토큰이 발행되지 않았거나 토큰이 만료된 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
 
   /api/users/send-email:
     post:
@@ -163,6 +233,7 @@ paths:
                       email:
                         type: string
 
+
   /api/users/updatePassword:
     post:
       summary: 비밀번호 재설정
@@ -185,6 +256,23 @@ paths:
       responses:
         200:
           description: 비밀번호 변경 성공
+        401:
+          description: "message: NotAuthorizedError, 현재 비밀번호(passwordCurrent)가 맞지 않는 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+
+
+
 
                   
 
