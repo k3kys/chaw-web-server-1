@@ -90,7 +90,7 @@ export const currentUser = (
 
 export const forgotPassword = (
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        
+
         const { email } = req.body
 
         const user = await User.findOne({ email });
@@ -157,15 +157,20 @@ export const sendEmail = catchAsync(
 
         const gmail = new Gmailer()
 
-        gmail.sendMessage({
+        const mailsend = gmail.sendMessage({
             email: email,
             subject: "Chaw: 웹메일 인증을 해주세요.",
             message
         })
 
-        res.status(StatusCodes.OK).json({
-            data: { number, email }
-        })
+        //@ts-ignore
+        if (mailsend) {
+            res.status(StatusCodes.OK).json({
+                data: { number, email }
+            })
+        } else {
+            throw new BadRequestError("Mail cant't send")
+        }
     }
 );
 
