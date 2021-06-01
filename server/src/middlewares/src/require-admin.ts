@@ -6,8 +6,8 @@ export const requireAuth = (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.currentUser && !req.currentUser.isAdmin) {
-    throw new NotAuthorizedError();
+  if (!req.currentUser && !req.currentUser!.isAdmin) {
+    throw new NotAuthorizedError()
   }
 
   next();
