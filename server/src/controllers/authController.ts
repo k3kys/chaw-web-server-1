@@ -160,9 +160,14 @@ export const sendEmail = catchAsync(
             message
         })
 
-        res.status(StatusCodes.OK).json({
-            data: { number, email }
-        })
+        //@ts-ignore
+        if (mailsend) {
+            res.status(StatusCodes.OK).json({
+                data: { number, email }
+            })
+        } else {
+            throw new BadRequestError("Mail cant't send")
+        }
     }
 );
 
