@@ -5,7 +5,7 @@ import express from "express"
 import cookieParser from 'cookie-parser'
 import userRouter from "./routes/userRoutes"
 import swaggerUi from "swagger-ui-express"
-import yaml = require("yamljs")
+import yaml from "yamljs"
 
 const app = express()
 
