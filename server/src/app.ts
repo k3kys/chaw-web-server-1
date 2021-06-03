@@ -4,14 +4,8 @@ import { NotFoundError } from './errors/src/not-found-error'
 import express from "express"
 import cookieParser from 'cookie-parser'
 import userRouter from "./routes/userRoutes"
-import swaggerUi from "swagger-ui-express"
-import yaml from "yamljs"
 
 const app = express()
-
-const swaggerDefinition = yaml.load('./swagger.yaml')
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinition))
-
 app.use(express.json())
 app.use(cookieParser())
 

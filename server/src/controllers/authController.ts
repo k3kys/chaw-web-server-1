@@ -90,7 +90,10 @@ export const currentUser = (
 
 export const forgotPassword = (
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await User.findOne({ email: req.body.email });
+
+        const { email } = req.body
+
+        const user = await User.findOne({ email });
 
         if (!user) {
             throw new BadRequestError("user not found")
@@ -150,24 +153,24 @@ export const sendEmail = catchAsync(
 
         const { email } = req.body
 
+        if(!email) {
+            throw new BadRequestError("Please input your mail")
+        }
+
         const message = "오른쪽 숫자 6자리를 입력해주세요 : " + number
 
         const gmail = new Gmailer()
 
-        const mailsend = gmail.sendMessage({
+        gmail.sendMessage({
             email: email,
             subject: "Chaw: 웹메일 인증을 해주세요.",
             message
         })
 
-        //@ts-ignore
-        if (mailsend) {
-            res.status(StatusCodes.OK).json({
-                data: { number, email }
-            })
-        } else {
-            throw new BadRequestError("Mail cant't send")
-        }
+
+        res.status(StatusCodes.OK).json({
+            data: { number, email }
+        })
     }
 );
 
