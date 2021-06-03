@@ -1,4 +1,4 @@
-import { validateRequest, currentUser } from "../middlewares";
+import { validateRequest, currentUser, requireAuth } from "../middlewares";
 import express from "express"
 import { body } from "express-validator"
 import * as authController from "../controllers/authController"
@@ -48,6 +48,6 @@ router.route('/forgotPassword').post(authController.forgotPassword);
 
 router.route("/resetPassword/:resetToken").patch(authController.resetPassword)
 
-router.route("/updatePassword").patch(currentUser, authController.updatePassword)
+router.route("/updatePassword").patch(currentUser, requireAuth, authController.updatePassword)
 
 export default router;
