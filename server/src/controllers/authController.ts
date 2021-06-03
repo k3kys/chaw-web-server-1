@@ -12,9 +12,9 @@ const generateRandom = function (min: number, max: number) {
     return ranNum;
 }
 
-const generateToken = (id?: string, email?: string, isAdmin?: boolean): string => {
+const generateToken = (id?: string, email?: string, isAdmin?: boolean, university?: string): string => {
     return jwt.sign(
-        { id, email, isAdmin },
+        { id, email, isAdmin, university },
         //@ts-ignore
         process.env.JWT_KEY!,
         {
@@ -43,7 +43,7 @@ export const signup = catchAsync(
 
         await user.save()
 
-        const userJwt = generateToken(user.id, user.email, user.isAdmin)
+        const userJwt = generateToken(user.id, user.email, user.isAdmin, user.university)
 
         req.session = {
             jwt: userJwt,
@@ -70,7 +70,7 @@ export const signin = catchAsync(
             throw new BadRequestError("Password is not matched")
         }
 
-        const userJwt = generateToken(existingUser.id, existingUser.email, existingUser.isAdmin)
+        const userJwt = generateToken(existingUser.id, existingUser.email, existingUser.isAdmin, existingUser.university)
 
         req.session = {
             jwt: userJwt,
@@ -139,7 +139,7 @@ export const resetPassword = (
 
         await user.save()
 
-        const userJwt = generateToken(user.id, user.email, user.isAdmin)
+        const userJwt = generateToken(user.id, user.email, user.isAdmin, user.university)
 
         req.session = {
             jwt: userJwt,
@@ -196,7 +196,7 @@ export const updatePassword = catchAsync(
 
         await user!.save()
 
-        const userJwt = generateToken(user!.id, user!.email, user!.isAdmin)
+        const userJwt = generateToken(user!.id, user!.email, user!.isAdmin, user!.university)
 
         req.session = {
             jwt: userJwt,
