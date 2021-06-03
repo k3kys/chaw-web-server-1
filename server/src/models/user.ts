@@ -68,6 +68,7 @@ userSchema.pre<UserDoc>("save", async function (next) {
     if (!this.isModified("password")) return next()
 
     this.password = await bcrypt.hash(this.password!, 12)
+    this.confirmPassword = await bcrypt.hash(this.confirmPassword!, 12)
 
     next();
 });
