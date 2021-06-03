@@ -96,7 +96,7 @@ export const forgotPassword = (
         const user = await User.findOne({ email });
 
         if (!user) {
-            throw new NotFoundError()
+            throw new BadRequestError("user not found")
         }
 
         const resetToken = generateToken(user.email);
