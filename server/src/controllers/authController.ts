@@ -38,7 +38,7 @@ export const signup = catchAsync(
 
         await user.save()
 
-        const userJwt = generateToken(user.id, user.email)
+        const userJwt = generateToken(user.id, user.email, user.isAdmin)
 
         req.session = {
             jwt: userJwt,
@@ -166,7 +166,6 @@ export const sendEmail = catchAsync(
             subject: "Chaw: 웹메일 인증을 해주세요.",
             message
         })
-
 
         res.status(StatusCodes.OK).json({
             data: { number, email }

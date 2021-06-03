@@ -58,6 +58,55 @@ paths:
                       properties:
                         message:
                           type: string
+        400-1(400):
+          description: "message: Email must be valid, field: eamil, 이메일 형식이 아닌 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
+        400-2(400):
+          description: "message: Password must be between 4 and 20 charcters, field: password, 비밀 번호가 4 이상 20 이하가 아닌 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
+
+        400-3(400):
+          description: "message: confirmPassword must be between 4 and 20 charcters, field: confirmPassword, 비밀 번호 확인이 4 이상 20 이하가 아닌 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
   
   /api/users/signin:
     post:
@@ -115,15 +164,71 @@ paths:
                         message:
                           type: string
 
+        400-2(400):
+          description: "message: Email must be valid, field: email, 이메일 형식이 아닌 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
+
+        400-3(400):
+          description: "message: You must supply a password, field: password, 비밀 번호를 입력하지 않은 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
+
   /api/users/signout:
     post:
       summary: 로그아웃
       description: api 보내면 세션 & 쿠키 만료
 
   /api/users/currentUser:
-    post:
+    get:
       summary: 로그인 된 유저 정보 가져오기
       description: api 보내면 로그인 된 유저의 id, email, isAdmin(관리자 여부) 가져올 수 있음
+      responses:
+        200:
+          description: 로그인된 유저 정보 가져오기
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentUser:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      isAdmin:
+                        type: boolean
+                      iat: 
+                        type: number
+                      exp:
+                        type: number
+      
 
   /api/users/forgotPassword:
     post:
@@ -164,7 +269,7 @@ paths:
                           type: string
 
   /api/users/resetPassword/:resetToken:
-    post:
+    patch:
       summary: 비밀번호 리셋하기
       description: forgotPassword api에서 response로 받은 resetToken을 parameter로 받아 유저 확인 후 비밀번호 재설정 
       parameters:
@@ -232,8 +337,9 @@ paths:
                         type: string
                       email:
                         type: string
+
         400:
-          description: "message: Mail cant't send, 메일이 발송되지 않을 경우"
+          description: "message: Please input your mail, 이메일을 입력하지 않았을 경우"
           content:
             application/json:
               schema:
@@ -246,10 +352,26 @@ paths:
                       properties:
                         message:
                           type: string
+        400-1(400):
+          description: "message: must ac.kr, field: email, 학교 웹메일 형식이 아닐 경우"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                        field:
+                          type: string
 
 
   /api/users/updatePassword:
-    post:
+    patch:
       summary: 비밀번호 재설정
       description: 현재 비밀번호, 변경할 비밀번호, 변경할 비밀번호 확인 받아서 비밀번호 재설정, 로그인 상태에만 변경 가능
       security:

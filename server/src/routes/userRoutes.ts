@@ -12,7 +12,7 @@ router.route("/signin").post([
   body("password")
     .trim()
     .notEmpty()
-    .withMessage("Yout must supply a password")
+    .withMessage("You must supply a password")
 ],
   validateRequest, authController.signin)
 
