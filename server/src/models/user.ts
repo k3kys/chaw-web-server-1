@@ -22,6 +22,7 @@ export interface UserDoc extends mongoose.Document {
     isAdmin: boolean,
     university: string,
     passwordResetToken: string | undefined,
+    unreadNotification: boolean
 }
 
 const userSchema = new mongoose.Schema<UserDoc>({
@@ -49,11 +50,15 @@ const userSchema = new mongoose.Schema<UserDoc>({
     },
     isAdmin: {
         type: Boolean,
-        default: false 
+        default: false
     },
     university: {
         type: String,
         required: true
+    },
+    unreadNotification: {
+        type: Boolean,
+        default: false
     },
     passwordResetToken: String,
 }, {

@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import { UserDoc } from "./user"
 
 export interface ProfileAttrs {
     image: string | undefined
@@ -20,6 +21,7 @@ interface ProfileModel extends mongoose.Model<ProfileDoc> {
 }
 
 export interface ProfileDoc extends mongoose.Document {
+    user: UserDoc
     image: string | undefined
     motherCountry: string
     currentCountry: string
@@ -29,7 +31,6 @@ export interface ProfileDoc extends mongoose.Document {
     intro: string,
     social: {
         facebook: string | undefined,
-        twitter: string | undefined,
         instagram: string | undefined
     },
     university: string
@@ -49,14 +50,18 @@ const profileSchema = new mongoose.Schema<ProfileDoc>({
         type: String,
         required: true
     },
-    motherLanguage: [{
-        type: String,
-        required: true
-    }],
-    learningLanguage: [{
-        type: String,
-        required: true
-    }],
+    motherLanguage: [
+        {
+            type: String,
+            required: true
+        }
+    ],
+    learningLanguage: [
+        {
+            type: String,
+            required: true
+        }
+    ],
     intro: {
         type: String,
         required: true
