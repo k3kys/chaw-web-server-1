@@ -34,7 +34,12 @@ export const signup = catchAsync(
             throw new BadRequestError("Email in use")
         }
 
+        if(password !== confirmPassword) {
+            throw new BadRequestError("Please confirm your password")
+        }
+
         const user = User.build({ name, email, password, confirmPassword, university })
+
 
         await user.save()
 
@@ -153,7 +158,7 @@ export const sendEmail = catchAsync(
 
         const { email } = req.body
 
-        if(!email) {
+        if (!email) {
             throw new BadRequestError("Please input your mail")
         }
 
