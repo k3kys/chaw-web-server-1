@@ -1,10 +1,10 @@
 import { Gmailer } from "../services"
-import { BadRequestError, NotAuthorizedError } from "../errors";
+import { BadRequestError, NotAuthorizedError } from "../errors"
 import { User } from "../models/user"
 import { catchAsync } from "../middlewares"
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
-import { StatusCodes } from 'http-status-codes';
+import { StatusCodes } from "http-status-codes"
 
 const generateRandom = function (min: number, max: number) {
     var ranNum = Math.floor(Math.random() * (max - min + 1)) + min;

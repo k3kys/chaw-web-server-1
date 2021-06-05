@@ -1,12 +1,12 @@
 import { BadRequestError } from "../errors";
 import { Request, Response, NextFunction } from "express"
 import { Profile } from "../models/profile"
-import { User } from "../models/user"
-import { StatusCodes } from 'http-status-codes';
+import { User,UserDoc } from "../models/user"
+import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
 
 export interface profileFields {
-    user: string,
+    user: UserDoc,
     image: string,
     motherCountry: string,
     motherLanguage: string,
@@ -37,7 +37,7 @@ export const createProfile = catchAsync(
 
         let profileFields = {} as profileFields;
 
-        profileFields.user = userId
+        profileFields.user = user
         profileFields.image = image
         profileFields.motherCountry = motherCountry
         profileFields.motherLanguage = motherLanguage
@@ -53,7 +53,7 @@ export const createProfile = catchAsync(
             profileFields.social = { instagram: instagram }
         }
 
-        const existingProfile = await Profile.findOne({ user: userId })
+        const existingProfile = await Profile.findOne({ user })
 
         if (existingProfile) {
             throw new BadRequestError("Profile is already existing")

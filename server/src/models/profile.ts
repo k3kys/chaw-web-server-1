@@ -4,7 +4,7 @@ import { UserDoc } from "./user"
 interface ProfileModel extends mongoose.Model<ProfileDoc> {}
 
 export interface ProfileDoc extends mongoose.Document {
-    user: string
+    user: UserDoc
     image: string | undefined
     motherCountry: string
     motherLanguage: [string],
@@ -18,9 +18,7 @@ export interface ProfileDoc extends mongoose.Document {
 }
 
 const profileSchema = new mongoose.Schema<ProfileDoc>({
-    user: {
-        type: String,
-    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
     image: {
         type: String
