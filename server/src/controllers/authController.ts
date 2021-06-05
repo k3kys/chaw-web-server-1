@@ -1,5 +1,5 @@
 import { Gmailer } from "../services"
-import { BadRequestError, NotFoundError, NotAuthorizedError } from "../errors";
+import { BadRequestError, NotAuthorizedError } from "../errors";
 import { User } from "../models/user"
 import { catchAsync } from "../middlewares"
 import { Request, Response, NextFunction } from "express"
@@ -22,6 +22,7 @@ const generateToken = (id?: string, email?: string, isAdmin?: boolean, universit
         }
     );
 };
+
 
 export const signup = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {

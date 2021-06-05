@@ -1,52 +1,31 @@
 import mongoose from "mongoose"
 import { UserDoc } from "./user"
 
-export interface ProfileAttrs {
-    image: string | undefined
-    motherCountry: string
-    currentCountry: string
-    confirmPassword: string,
-    motherLanguage: [string],
-    learningLanguage: [string],
-    intro: string,
-    social: {
-        facebook: string | undefined,
-        instagram: string | undefined
-    },
-    university: string
-}
-
-interface ProfileModel extends mongoose.Model<ProfileDoc> {
-    build(attrs: ProfileAttrs): ProfileDoc
-}
+interface ProfileModel extends mongoose.Model<ProfileDoc> {}
 
 export interface ProfileDoc extends mongoose.Document {
-    user: UserDoc
+    user: string
     image: string | undefined
     motherCountry: string
-    currentCountry: string
-    confirmPassword: string,
     motherLanguage: [string],
     learningLanguage: [string],
     intro: string,
     social: {
-        facebook: string | undefined,
-        instagram: string | undefined
+        facebook?: string | undefined,
+        instagram?: string | undefined
     },
     university: string
 }
 
 const profileSchema = new mongoose.Schema<ProfileDoc>({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    user: {
+        type: String,
+    },
 
     image: {
         type: String
     },
     motherCountry: {
-        type: String,
-        required: true
-    },
-    currentCountry: {
         type: String,
         required: true
     },
@@ -78,10 +57,6 @@ const profileSchema = new mongoose.Schema<ProfileDoc>({
 }, {
     timestamps: true
 })
-
-profileSchema.statics.build = (attrs: ProfileAttrs) => {
-    return new Profile(attrs)
-}
 
 const Profile = mongoose.model<ProfileDoc, ProfileModel>("Profile", profileSchema)
 
