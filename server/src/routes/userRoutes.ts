@@ -1,8 +1,7 @@
-import { validateRequest, currentUser, requireAuth } from "../middlewares";
+import { validateRequest, currentUser, requireAuth } from "../middlewares"
 import express from "express"
 import { body } from "express-validator"
 import * as authController from "../controllers/authController"
-
 const router = express.Router()
 
 router.route("/signin").post([
