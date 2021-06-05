@@ -80,7 +80,7 @@ export const signin = catchAsync(
         res.status(StatusCodes.OK).send(existingUser);
     })
 
-export const signout = (
+export const signout = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         req.session = null;
 
@@ -88,13 +88,13 @@ export const signout = (
     }
 )
 
-export const currentUser = (
+export const currentUser = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         res.send({ currentUser: req.currentUser || null })
     }
 )
 
-export const forgotPassword = (
+export const forgotPassword = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const { email } = req.body
@@ -126,7 +126,7 @@ export const forgotPassword = (
     }
 )
 
-export const resetPassword = (
+export const resetPassword = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const user = await User.findOne({ passwordResetToken: req.params.resetToken });
 
