@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import userRouter from "./routes/userRoutes"
 import profileRouter from "./routes/profileRoutes"
 import uploadRouter from "./routes/uploadRoutes"
+import followerRouter from "./routes/followerRoutes"
 
 import swaggerUi from "swagger-ui-express"
 import yaml from "yamljs"
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 app.use("/api/users", userRouter)
 app.use("/api/profile", profileRouter)
 app.use("/api/upload", uploadRouter)
+app.use("/api/followers", followerRouter)
 
 app.get("*", (req, res) => {
     throw new NotFoundError()

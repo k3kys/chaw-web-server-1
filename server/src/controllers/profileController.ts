@@ -4,6 +4,7 @@ import { Profile } from "../models/profile"
 import { User,UserDoc } from "../models/user"
 import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
+import { Follower } from "../models/follower"
 
 export interface profileFields {
     user: UserDoc,
@@ -59,7 +60,13 @@ export const createProfile = catchAsync(
             throw new BadRequestError("Profile is already existing")
         }
 
-        const profile = await new Profile(profileFields).save()
+        const profile = await new Profile(profileFields)
+
+        profile.save()
+
+        const follower = await new Follower({ user, followers: [], following: [] })
+
+        follower.save()
 
         res.status(StatusCodes.OK).send(profile);
     }
@@ -100,6 +107,8 @@ export const updateProfile = catchAsync(
             { $set: profileFields },
             { new: true }
         )
+
+        profile.save()
 
         res.status(StatusCodes.OK).send(updatedProfile);
     }
