@@ -3,7 +3,10 @@ import { errorHandler } from './middlewares/src/error-handler'
 import { NotFoundError } from './errors/src/not-found-error'
 import express from "express"
 import cookieParser from 'cookie-parser'
+
 import userRouter from "./routes/userRoutes"
+import profileRouter from "./routes/profileRoutes"
+
 import swaggerUi from "swagger-ui-express"
 import yaml from "yamljs"
 
@@ -23,6 +26,7 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/users", userRouter)
+app.use("/api/profile", profileRouter)
 
 app.get("*", (req, res) => {
     throw new NotFoundError()
