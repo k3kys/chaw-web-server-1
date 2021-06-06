@@ -1,7 +1,7 @@
 import { BadRequestError } from "../errors";
 import { Request, Response, NextFunction } from "express"
 import { Profile } from "../models/profile"
-import { User,UserDoc } from "../models/user"
+import { User, UserDoc } from "../models/user"
 import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
 import { Follower } from "../models/follower"
@@ -134,7 +134,7 @@ export const deleteProfile = catchAsync(
 
         const profile = await Profile.findOne({ _id: profileId })
 
-        if(profile) {
+        if (profile) {
             await profile.remove();
         } else {
             throw new BadRequestError("Profile is not existing")
