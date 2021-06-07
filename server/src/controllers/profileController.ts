@@ -6,20 +6,6 @@ import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
 import { Follower } from "../models/follower"
 
-export interface profileFields {
-    user: UserDoc,
-    image: string,
-    motherCountry: string,
-    motherLanguage: string,
-    learningLanguage: string,
-    intro: string,
-    social: {
-        facebook?: string | undefined,
-        instagram?: string | undefined
-    },
-    university: string
-}
-
 export const createProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
@@ -31,36 +17,22 @@ export const createProfile = catchAsync(
             throw new BadRequestError("User is not existing")
         }
 
-        const university = user.university
-
         const { image, motherCountry, motherLanguage,
             learningLanguage, intro, facebook, instagram } = req.body
 
-        let profileFields = {} as profileFields;
-
-        profileFields.user = user
-        profileFields.image = image
-        profileFields.motherCountry = motherCountry
-        profileFields.motherLanguage = motherLanguage
-        profileFields.learningLanguage = learningLanguage
-        profileFields.intro = intro
-        profileFields.university = university
-
-        if (facebook && instagram) {
-            profileFields.social = { facebook: facebook, instagram: instagram }
-        } else if (facebook) {
-            profileFields.social = { facebook: facebook }
-        } else {
-            profileFields.social = { instagram: instagram }
-        }
-
-        const existingProfile = await Profile.findOne({ user })
-
-        if (existingProfile) {
-            throw new BadRequestError("Profile is already existing")
-        }
-
-        const profile = await new Profile(profileFields)
+        const profile = new Profile({
+            user: user._id,
+            image: image,
+            motherCountry: motherCountry,
+            motherLanguage: motherLanguage,
+            learningLanguage: learningLanguage,
+            intro: intro,
+            social: {
+                facebook: facebook,
+                instagram: instagram
+            },
+            university: user.university
+        })
 
         profile.save()
 
@@ -68,9 +40,10 @@ export const createProfile = catchAsync(
 
         follower.save()
 
-        res.status(StatusCodes.OK).send(profile);
+        res.status(StatusCodes.OK).send(profile)
     }
 )
+
 
 export const updateProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
