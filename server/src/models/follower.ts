@@ -4,15 +4,15 @@ import { UserDoc } from "./user"
 interface FollowerModel extends mongoose.Model<FollowerDoc> { }
 
 export interface FollowerDoc extends mongoose.Document {
-    user: UserDoc | string,
+    user: string,
     followers: [
         {
-            user: UserDoc | string
+            user: string
         }
     ]
     followings: [
         {
-            user: UserDoc | string
+            user: string
         }
     ]
 }
