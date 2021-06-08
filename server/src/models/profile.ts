@@ -1,12 +1,11 @@
 import mongoose from "mongoose"
-import { UserDoc } from "./user"
 
 interface ProfileModel extends mongoose.Model<ProfileDoc> {}
 
 export interface ProfileDoc extends mongoose.Document {
-    user: string
-    image: string | undefined
-    motherCountry: string
+    user: string,
+    image: string | undefined,
+    motherCountry: string,
     motherLanguage: [string],
     learningLanguage: [string],
     intro: string,

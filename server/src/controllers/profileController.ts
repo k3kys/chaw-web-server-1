@@ -1,4 +1,4 @@
-import { BadRequestError } from "../errors";
+import { BadRequestError, NotFoundError } from "../errors";
 import { Request, Response, NextFunction } from "express"
 import { Profile } from "../models/profile"
 import { User, UserDoc } from "../models/user"
@@ -9,12 +9,16 @@ import { Follower } from "../models/follower"
 export const createProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        const { userId } = req.params
-
-        const user = await User.findOne({ _id: userId })
+        const user = await User.findOne({ _id: req.params.userId })
 
         if (!user) {
-            throw new BadRequestError("User is not existing")
+            throw new NotFoundError()
+        }
+
+        const existingProfile = await Profile.findOne({ user: user._id })
+
+        if (existingProfile) {
+            throw new BadRequestError("Profile is already existing")
         }
 
         const { image, motherCountry, motherLanguage,
@@ -47,37 +51,24 @@ export const createProfile = catchAsync(
 
 export const updateProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { profileId } = req.params
 
-        const profile = await Profile.findOne({ _id: profileId })
+        const profile = await Profile.findOne({ _id: req.params.profileId })
 
         if (!profile) {
-            throw new BadRequestError("Profile is not existing")
+            throw new NotFoundError()
         }
 
         const { image, motherCountry, motherLanguage,
             learningLanguage, intro, facebook, instagram } = req.body
 
-        let profileFields = {} as profileFields;
-
-        profileFields.image = image
-        profileFields.motherCountry = motherCountry
-        profileFields.motherLanguage = motherLanguage
-        profileFields.learningLanguage = learningLanguage
-        profileFields.intro = intro
-
-        if (facebook && instagram) {
-            profileFields.social = { facebook: facebook, instagram: instagram }
-        } else if (facebook) {
-            profileFields.social = { facebook: facebook }
-        } else {
-            profileFields.social = { instagram: instagram }
-        }
-
-        //@ts-ignore
         const updatedProfile = await Profile.findOneAndUpdate(
-            { _id: profileId },
-            { $set: profileFields },
+            { _id: profile._id },
+            {
+                $set: {
+                    image, motherCountry, motherLanguage,
+                    learningLanguage, intro, facebook, instagram
+                }
+            },
             { new: true }
         )
 
@@ -89,12 +80,11 @@ export const updateProfile = catchAsync(
 
 export const getProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { profileId } = req.params
 
-        const profile = await Profile.findOne({ _id: profileId })
+        const profile = await Profile.findOne({ _id: req.params.profileId })
 
         if (!profile) {
-            throw new BadRequestError("Profile is not existing")
+            throw new NotFoundError()
         }
 
         res.status(StatusCodes.OK).send(profile);
@@ -103,15 +93,14 @@ export const getProfile = catchAsync(
 
 export const deleteProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { profileId } = req.params
 
-        const profile = await Profile.findOne({ _id: profileId })
+        const profile = await Profile.findOne({ _id: req.params.profileId })
 
-        if (profile) {
-            await profile.remove();
-        } else {
-            throw new BadRequestError("Profile is not existing")
+        if(!profile) {
+            throw new NotFoundError()
         }
+
+        await profile.remove();
 
         res.status(StatusCodes.OK).send({});
     }

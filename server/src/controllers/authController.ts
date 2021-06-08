@@ -41,7 +41,6 @@ export const signup = catchAsync(
 
         const user = User.build({ name, email, password, confirmPassword, university })
 
-
         await user.save()
 
         const userJwt = generateToken(user.id, user.email, user.isAdmin, user.university)
