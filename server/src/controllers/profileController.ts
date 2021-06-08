@@ -48,6 +48,7 @@ export const createProfile = catchAsync(
     }
 )
 
+
 export const updateProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 

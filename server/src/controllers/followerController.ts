@@ -1,4 +1,4 @@
-import { BadRequestError } from "../errors"
+import { BadRequestError, NotFoundError } from "../errors"
 import { Request, Response, NextFunction } from "express"
 import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
@@ -11,7 +11,7 @@ export const followUser = catchAsync(
         const userToFollow = await Follower.findOne({ user: req.params.userToFollowId })
 
         if (!user || !userToFollow) {
-            throw new BadRequestError("User not found")
+            throw new NotFoundError()
         }
 
         const isFollowing =
@@ -39,7 +39,7 @@ export const unfollowUser = catchAsync(
         const userToUnfollow = await Follower.findOne({ user: req.params.userToUnfollowId })
 
         if (!user || !userToUnfollow) {
-            throw new BadRequestError("User not found")
+            throw new NotFoundError()
         }
 
         const isFollowing =
