@@ -89,6 +89,13 @@ export const getAllPost = catchAsync(
             }
             : {}
 
+        //@ts-ignore
+        const user = await User.findOne({ ...searchKeyword })
+
+        if (!user) {
+            throw new NotFoundError()
+        }
+
         const sortOrder =
             order === "최신순"
                 ? { _id: -1 }
@@ -96,7 +103,10 @@ export const getAllPost = catchAsync(
                     ? { viewCount: -1 }
                     : { _id: -1 }
 
-        const post = await Post.find({ ...searchKeyword }).sort(sortOrder)
+        const post = await Post.find({ user: user._id })
+            .populate("user")
+            .populate("profile")
+            .sort(sortOrder)
 
         if (!post) {
             throw new NotFoundError()
@@ -132,8 +142,6 @@ export const deletePost = catchAsync(
         }
 
         await post.remove()
-
-
 
         res.status(StatusCodes.OK).send({});
     }
