@@ -1,5 +1,5 @@
 import { Gmailer } from "../services"
-import { BadRequestError, NotAuthorizedError } from "../errors"
+import { BadRequestError, NotAuthorizedError, NotFoundError } from "../errors"
 import { User } from "../models/user"
 import { catchAsync } from "../middlewares"
 import { Request, Response, NextFunction } from "express"
@@ -101,7 +101,7 @@ export const forgotPassword = catchAsync(
         const user = await User.findOne({ email });
 
         if (!user) {
-            throw new BadRequestError("user not found")
+            throw new NotFoundError()
         }
 
         const resetToken = generateToken(user.email);

@@ -8,6 +8,8 @@ import userRouter from "./routes/userRoutes"
 import profileRouter from "./routes/profileRoutes"
 import uploadRouter from "./routes/uploadRoutes"
 import followerRouter from "./routes/followerRoutes"
+import postRouter from "./routes/postRoutes"
+import searchRouter from "./routes/searchRoutes"
 
 import swaggerUi from "swagger-ui-express"
 import yaml from "yamljs"
@@ -31,6 +33,8 @@ app.use("/api/users", userRouter)
 app.use("/api/profile", profileRouter)
 app.use("/api/upload", uploadRouter)
 app.use("/api/followers", followerRouter)
+app.use("/api/posts", postRouter)
+app.use("/api/search", searchRouter)
 
 app.get("*", (req, res) => {
     throw new NotFoundError()
