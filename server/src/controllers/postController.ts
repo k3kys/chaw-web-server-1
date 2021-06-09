@@ -80,15 +80,6 @@ export const getAllPost = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const order = req.query.order || ''
 
-        const searchKeyword = req.query.searchKeyword
-            ? {
-                name: {
-                    $regex: req.query.searchKeyword,
-                    $options: "i",
-                },
-            }
-            : {}
-
         const sortOrder =
             order === "최신순"
                 ? { _id: -1 }
@@ -96,7 +87,7 @@ export const getAllPost = catchAsync(
                     ? { viewCount: -1 }
                     : { _id: -1 }
 
-        const post = await Post.find({ ...searchKeyword }).sort(sortOrder)
+        const post = await Post.find({}).sort(sortOrder)
 
         if (!post) {
             throw new NotFoundError()
