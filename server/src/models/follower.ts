@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import { UserDoc } from "./user"
 
 interface FollowerModel extends mongoose.Model<FollowerDoc> { }
 
