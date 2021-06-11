@@ -43,7 +43,6 @@ export const getPost = catchAsync(
             post: req.params.postId, ip
         })
 
-
         if (!existingHit) {
             const hit = await new Hit({
                 post: req.params.postId, ip
@@ -89,21 +88,55 @@ export const getAllPost = catchAsync(
             }
             : {}
 
+        const motherLanguage = req.query.motherLanguage
+            ? {
+                motherLanguage: {
+                    $regex: req.query.motherLanguage,
+                    $options: "i",
+                },
+            }
+            : {}
+
+        const learningLanguage = req.query.learningLanguage
+            ? {
+                learningLanguage: {
+                    $regex: req.query.learningLanguage,
+                    $options: "i",
+                },
+            }
+            : {}
+
         //@ts-ignore
         const user = await User.findOne({ ...searchKeyword })
+        //@ts-ignore
+        const userMotherLanguage = await Profile.findOne({ ...motherLanguage })
+        //@ts-ignore
+        const userLearningLanguage = await Profile.findOne({ ...learningLanguage })
 
-        if (!user) {
+        if (!user || !userMotherLanguage || !userLearningLanguage) {
             throw new NotFoundError()
         }
 
         const sortOrder =
             order === "최신순"
                 ? { _id: -1 }
-                : order === "조회수많은순"
-                    ? { viewCount: -1 }
-                    : { _id: -1 }
+                : order === "좋아요순"
+                    ? { likes: -1 }
+                    : order === "조회순"
+                        ? { viewCount: -1 }
+                        : { _id: -1 }
 
-        const post = await Post.find({ user: user._id })
+        const post = await Post.find({
+            $and: [
+                {
+                    $or: [
+                        {},
+                        { user: user._id },
+                        { profile: userMotherLanguage._id },
+                        { profile: userLearningLanguage._id }]
+                },
+            ]
+        })
             .populate("user")
             .populate("profile")
             .sort(sortOrder)
@@ -143,6 +176,54 @@ export const deletePost = catchAsync(
 
         await post.remove()
 
-        res.status(StatusCodes.OK).send({});
+        res.status(StatusCodes.OK).send({})
+    }
+)
+
+export const likePost = catchAsync(
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+        const post = await Post.findById(req.params.postId)
+
+        if (!post) {
+            throw new NotFoundError()
+        }
+
+        const isLiked =
+            post.likes.filter(like => like.user.toString() === req.currentUser!.id).length > 0;
+
+        if (isLiked) {
+            throw new BadRequestError("Post already liked")
+        }
+
+        await post.likes.unshift({ user: req.currentUser!.id });
+        await post.save();
+
+        res.status(StatusCodes.OK).send({ post })
+    }
+)
+
+export const unlikePost = catchAsync(
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+        const post = await Post.findById(req.params.postId)
+
+        if (!post) {
+            throw new NotFoundError()
+        }
+
+        const isLiked =
+            post.likes.filter(like => like.user.toString() === req.currentUser!.id).length === 0
+
+        if (isLiked) {
+            throw new BadRequestError("Post not liked before")
+        }
+
+        const index = post.likes.map(like => like.user.toString()).indexOf(req.currentUser!.id);
+
+        await post.likes.splice(index, 1);
+        await post.save();
+
+        res.status(StatusCodes.OK).send({ post })
     }
 )

@@ -11,4 +11,8 @@ router.route("/getAllPost").get(currentUser, postController.getAllPost)
 
 router.route("/deletePost/:postId").delete(currentUser, postController.deletePost)
 
+router.route("/likePost/:postId").post(currentUser, postController.likePost)
+
+router.route("/unlikePost/:postId").post(currentUser, postController.unlikePost)
+
 export default router;
