@@ -15,7 +15,7 @@ const storageS3 = multerS3({
     bucket: "chaw",
     acl: "public-read",
     contentType: multerS3.AUTO_CONTENT_TYPE,
-    key(req: Request, file, cb) {
+    key(req: Request, file: any, cb: any) {
         cb(null, file.originalname);
     },
 });

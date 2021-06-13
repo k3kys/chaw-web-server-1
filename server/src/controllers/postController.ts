@@ -25,11 +25,9 @@ export const createPost = catchAsync(
             throw new BadRequestError("Post is already existing")
         }
 
-        const post = await new Post({
+        const post = await Post.create({
             user, profile
         })
-
-        await post.save()
 
         res.status(StatusCodes.OK).send(post)
     }
@@ -44,11 +42,9 @@ export const getPost = catchAsync(
         })
 
         if (!existingHit) {
-            const hit = await new Hit({
+            await Hit.create({
                 post: req.params.postId, ip
             })
-
-            hit.save()
 
             await Post.findOneAndUpdate(
                 { _id: req.params.postId },
@@ -68,8 +64,6 @@ export const getPost = catchAsync(
         if (!post) {
             throw new NotFoundError()
         }
-
-        await post.save()
 
         res.status(StatusCodes.OK).send(post)
     }
@@ -170,7 +164,6 @@ export const getAllPostByNew = catchAsync(
         if (!post) {
             throw new NotFoundError()
         }
-
 
         res.status(StatusCodes.OK).send(post)
     }

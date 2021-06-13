@@ -1,7 +1,7 @@
 import { BadRequestError, NotFoundError } from "../errors";
 import { Request, Response, NextFunction } from "express"
 import { Profile } from "../models/profile"
-import { User, UserDoc } from "../models/user"
+import { User } from "../models/user"
 import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
 
@@ -23,7 +23,7 @@ export const createProfile = catchAsync(
         const { image, motherCountry, motherLanguage,
             learningLanguage, intro, facebook, instagram } = req.body
 
-        const profile = new Profile({
+        const profile = await Profile.create({
             user: user._id,
             image: image,
             motherCountry: motherCountry,
@@ -36,8 +36,6 @@ export const createProfile = catchAsync(
             },
             university: user.university
         })
-
-        await profile.save()
 
         res.status(StatusCodes.OK).send(profile)
     }
@@ -66,8 +64,6 @@ export const updateProfile = catchAsync(
             },
             { new: true }
         )
-
-        await profile.save()
 
         res.status(StatusCodes.OK).send(updatedProfile);
     }
