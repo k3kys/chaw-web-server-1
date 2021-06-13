@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chaw-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chaw
+  template:
+    metadata:
+      labels:
+        app: chaw
+    spec:
+      containers:
+        - name: chaw
+          image: m60kys/chaw:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: port
+                  key: PORT
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-uri
+                  key: MONGO_URI
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-key
+                  key: JWT_KEY
+            - name: JWT_EXPIRES_IN
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-expires-in
+                  key: JWT_EXPIRES_IN
+            - name: NODEMAILER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: nodemailer-email
+                  key: NODEMAILER_EMAIL
+            - name: NODEMAILER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nodemailer-user
+                  key: NODEMAILER_USER
+            - name: NODEMAILER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nodemailer-password
+                  key: NODEMAILER_PASSWORD
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-access-key-id
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret-access-key
+                  key: AWS_SECRET_ACCESS_KEY
