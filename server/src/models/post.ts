@@ -1,13 +1,14 @@
 import mongoose from "mongoose"
+import { ProfileDoc } from "./profile"
 
 interface PostModel extends mongoose.Model<PostDoc> { }
 
 export interface PostDoc extends mongoose.Document {
-    user: string,
-    profile: string,
+    user: any,
+    profile: string | ProfileDoc[],
     likes: [
         {
-            user: string
+            user: string | ProfileDoc[]
         }
     ],
     viewCount: number

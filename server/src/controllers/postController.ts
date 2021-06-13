@@ -29,7 +29,7 @@ export const createPost = catchAsync(
             user, profile
         })
 
-        post.save()
+        await post.save()
 
         res.status(StatusCodes.OK).send(post)
     }
@@ -69,81 +69,108 @@ export const getPost = catchAsync(
             throw new NotFoundError()
         }
 
-        post.save()
+        await post.save()
 
         res.status(StatusCodes.OK).send(post)
     }
 )
 
-export const getAllPost = catchAsync(
+export const getAllPostByLike = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const order = req.query.order || ''
+        const searchKeyword = req.query.searchKeyword || ''
+        const motherLanguage = req.query.motherLanguage || ''
+        const learningLanguage = req.query.learningLanguage || ''
 
-        const searchKeyword = req.query.searchKeyword
-            ? {
-                name: {
-                    $regex: req.query.searchKeyword,
-                    $options: "i",
-                },
-            }
-            : {}
+        const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
+        const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
 
-        const motherLanguage = req.query.motherLanguage
-            ? {
-                motherLanguage: {
-                    $regex: req.query.motherLanguage,
-                    $options: "i",
-                },
-            }
-            : {}
-
-        const learningLanguage = req.query.learningLanguage
-            ? {
-                learningLanguage: {
-                    $regex: req.query.learningLanguage,
-                    $options: "i",
-                },
-            }
-            : {}
-
-        //@ts-ignore
-        const user = await User.findOne({ ...searchKeyword })
-        //@ts-ignore
-        const userMotherLanguage = await Profile.findOne({ ...motherLanguage })
-        //@ts-ignore
-        const userLearningLanguage = await Profile.findOne({ ...learningLanguage })
+        const userFilter = searchKeyword ? { user } : {}
+        const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
+        const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
 
         if (!user || !userMotherLanguage || !userLearningLanguage) {
             throw new NotFoundError()
         }
 
-        const sortOrder =
-            order === "최신순"
-                ? { _id: -1 }
-                : order === "좋아요순"
-                    ? { likes: -1 }
-                    : order === "조회순"
-                        ? { viewCount: -1 }
-                        : { _id: -1 }
-
         const post = await Post.find({
-            $and: [
-                {
-                    $or: [
-                        {},
-                        { user: user._id },
-                        { profile: userMotherLanguage._id },
-                        { profile: userLearningLanguage._id }]
-                },
-            ]
+            ...userFilter,
+            ...motherLanguageFilter,
+            ...learningLanguageFilter
         })
             .populate("user")
             .populate("profile")
-            .sort(sortOrder)
+            .sort({ likes: -1 })
 
         if (!post) {
             throw new NotFoundError()
         }
+
+        res.status(StatusCodes.OK).send(post)
+    }
+)
+
+export const getAllPostByView = catchAsync(
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const searchKeyword = req.query.searchKeyword || ''
+        const motherLanguage = req.query.motherLanguage || ''
+        const learningLanguage = req.query.learningLanguage || ''
+
+        const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
+        const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
+
+        const userFilter = searchKeyword ? { user } : {}
+        const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
+        const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
+
+        if (!user || !userMotherLanguage || !userLearningLanguage) {
+            throw new NotFoundError()
+        }
+
+        const post = await Post.find({
+            ...userFilter,
+            ...motherLanguageFilter,
+            ...learningLanguageFilter
+        })
+            .populate("user")
+            .populate("profile")
+            .sort({ viewCount: -1 })
+
+        if (!post) {
+            throw new NotFoundError()
+        }
+
+        res.status(StatusCodes.OK).send(post)
+    }
+)
+
+export const getAllPostByNew = catchAsync(
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const searchKeyword = req.query.searchKeyword || ''
+        const motherLanguage = req.query.motherLanguage || ''
+        const learningLanguage = req.query.learningLanguage || ''
+
+        const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
+        const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
+
+        const userFilter = searchKeyword ? { user } : {}
+        const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
+        const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
+
+        const post = await Post.find({
+            ...userFilter,
+            ...motherLanguageFilter,
+            ...learningLanguageFilter
+        })
+            .populate("user")
+            .populate("profile")
+
+        if (!post) {
+            throw new NotFoundError()
+        }
+
 
         res.status(StatusCodes.OK).send(post)
     }

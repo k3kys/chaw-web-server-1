@@ -7,7 +7,11 @@ router.route("/createPost").post(currentUser, postController.createPost)
 
 router.route("/getPost/:postId").get(postController.getPost)
 
-router.route("/getAllPost").get(currentUser, postController.getAllPost)
+router.route("/getAllPostByLike").get(currentUser, postController.getAllPostByLike)
+
+router.route("/getAllPostByView").get(currentUser, postController.getAllPostByView)
+
+router.route("/getAllPostByNew").get(currentUser, postController.getAllPostByNew)
 
 router.route("/deletePost/:postId").delete(currentUser, postController.deletePost)
 

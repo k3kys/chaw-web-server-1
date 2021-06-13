@@ -4,7 +4,6 @@ import { Profile } from "../models/profile"
 import { User, UserDoc } from "../models/user"
 import { StatusCodes } from "http-status-codes"
 import { catchAsync } from "../middlewares"
-import { Follower } from "../models/follower"
 
 export const createProfile = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -38,11 +37,7 @@ export const createProfile = catchAsync(
             university: user.university
         })
 
-        profile.save()
-
-        const follower = await new Follower({ user, followers: [], following: [] })
-
-        follower.save()
+        await profile.save()
 
         res.status(StatusCodes.OK).send(profile)
     }
@@ -72,7 +67,7 @@ export const updateProfile = catchAsync(
             { new: true }
         )
 
-        profile.save()
+        await profile.save()
 
         res.status(StatusCodes.OK).send(updatedProfile);
     }

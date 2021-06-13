@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 import { StatusCodes } from "http-status-codes"
 
 const generateRandom = function (min: number, max: number) {
-    var ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    const ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
 
     return ranNum;
 }
@@ -15,7 +15,6 @@ const generateRandom = function (min: number, max: number) {
 const generateToken = (id?: string, email?: string, isAdmin?: boolean, university?: string): string => {
     return jwt.sign(
         { id, email, isAdmin, university },
-        //@ts-ignore
         process.env.JWT_KEY!,
         {
             expiresIn: process.env.JWT_EXPIRES_IN!,
@@ -35,7 +34,7 @@ export const signup = catchAsync(
             throw new BadRequestError("Email in use")
         }
 
-        if(password !== confirmPassword) {
+        if (password !== confirmPassword) {
             throw new BadRequestError("Please confirm your password")
         }
 
