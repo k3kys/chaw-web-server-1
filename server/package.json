@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "prod": "export NODE_OPTIONS=--max_old_space_size=4096 && ts-node-dev src/server.ts",
     "dev": "ts-node-dev src/server.ts",
     "test": "jest --watchAll --no-cache"
   },

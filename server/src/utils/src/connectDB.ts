@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose"
+import { DatabaseConnectionError } from "../../errors/"
 
 export const connectDB = async () => {
     try {
@@ -7,9 +8,9 @@ export const connectDB = async () => {
             useUnifiedTopology: true,
             useCreateIndex: true,
             useFindAndModify: false
-        });
-        console.log('Connected to MongoDB');
+        })
+        console.log('Connected to MongoDB')
     } catch (err) {
-        console.error(err);
+        throw new DatabaseConnectionError()
     }
 }

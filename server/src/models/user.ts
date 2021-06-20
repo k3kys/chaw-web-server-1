@@ -3,15 +3,15 @@ import bcrypt from "bcryptjs"
 
 export interface UserAttrs {
     name: string
-    email: string
-    password: string
+    email: string,
+    password: string,
     confirmPassword: string,
     university: string
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
     build(attrs: UserAttrs): UserDoc,
-    correctPassword(candidatePassword: string, password: string): Promise<boolean>;
+    correctPassword(candidatePassword: string, password: string): Promise<boolean>
 }
 
 export interface UserDoc extends mongoose.Document {
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema<UserDoc>({
         required: [true, "Please confirm your password"],
         validate: {
             validator: function (this: UserDoc, el: any) {
-                return el === this.password;
+                return el === this.password
             },
             message: "Passwords are not the same!",
         },
@@ -75,15 +75,15 @@ userSchema.pre<UserDoc>("save", async function (next) {
     this.password = await bcrypt.hash(this.password!, 12)
     this.confirmPassword = await bcrypt.hash(this.confirmPassword!, 12)
 
-    next();
-});
+    next()
+})
 
 userSchema.statics.correctPassword = async function (
     candidatePassword: string,
     userPassword: string
 ) {
-    return await bcrypt.compare(candidatePassword, userPassword);
-};
+    return await bcrypt.compare(candidatePassword, userPassword)
+}
 
 const User = mongoose.model<UserDoc, UserModel>("User", userSchema)
 

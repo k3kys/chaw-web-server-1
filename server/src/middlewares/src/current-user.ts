@@ -1,10 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
 
 interface UserPayload {
-  id: string
-  email: string
-  isAdmin: boolean
+  id: string,
+  email: string,
+  isAdmin: boolean,
+  university: string
 }
 
 declare global {
@@ -33,5 +34,5 @@ export const currentUser = (
     req.currentUser = payload
   } catch (err) {}
 
-  next();
-};
+  next()
+}

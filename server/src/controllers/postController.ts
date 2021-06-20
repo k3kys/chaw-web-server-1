@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from "../errors";
+import { BadRequestError, NotFoundError } from "../errors"
 import { Request, Response, NextFunction } from "express"
 
 import { Profile } from "../models/profile"
@@ -7,13 +7,12 @@ import { Post } from "../models/post"
 import { Hit } from "../models/hit"
 
 import { StatusCodes } from "http-status-codes"
-import { catchAsync } from "../middlewares"
 
-export const createPost = catchAsync(
+export const createPost =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-        const user = await User.findOne({ _id: req.currentUser!.id })
-        const profile = await Profile.findOne({ user: req.currentUser!.id })
+        const user = await User.findOne({ _id: req.currentUser?.id })
+        const profile = await Profile.findOne({ user: req.currentUser?.id })
 
         if (!user || !profile) {
             throw new NotFoundError()
@@ -25,15 +24,14 @@ export const createPost = catchAsync(
             throw new BadRequestError("Post is already existing")
         }
 
-        const post = await Post.create({
-            user, profile
-        })
+        const post = Post.build({ user, profile })
+
+        await post.save()
 
         res.status(StatusCodes.OK).send(post)
     }
-)
 
-export const getPost = catchAsync(
+export const getPost =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress
 
@@ -67,27 +65,32 @@ export const getPost = catchAsync(
 
         res.status(StatusCodes.OK).send(post)
     }
-)
 
-export const getAllPostByLike = catchAsync(
+//refactoring-required
+export const getAllPostByLike =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const searchKeyword = req.query.searchKeyword || ''
         const motherLanguage = req.query.motherLanguage || ''
         const learningLanguage = req.query.learningLanguage || ''
+        const university = req.currentUser?.university
 
         const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userUniversity = await User.find({ university: university as string })
         const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
         const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
 
+        const universityFilter = university ? { user: userUniversity } : {}
         const userFilter = searchKeyword ? { user } : {}
         const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
         const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
+
 
         if (!user || !userMotherLanguage || !userLearningLanguage) {
             throw new NotFoundError()
         }
 
         const post = await Post.find({
+            ...universityFilter,
             ...userFilter,
             ...motherLanguageFilter,
             ...learningLanguageFilter
@@ -102,18 +105,21 @@ export const getAllPostByLike = catchAsync(
 
         res.status(StatusCodes.OK).send(post)
     }
-)
 
-export const getAllPostByView = catchAsync(
+//refactoring-required
+export const getAllPostByView =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const searchKeyword = req.query.searchKeyword || ''
         const motherLanguage = req.query.motherLanguage || ''
         const learningLanguage = req.query.learningLanguage || ''
+        const university = req.currentUser?.university
 
         const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userUniversity = await User.find({ university: university as string })
         const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
         const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
-
+        
+        const universityFilter = university ? { user: userUniversity } : {}
         const userFilter = searchKeyword ? { user } : {}
         const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
         const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
@@ -123,6 +129,7 @@ export const getAllPostByView = catchAsync(
         }
 
         const post = await Post.find({
+            ...universityFilter,
             ...userFilter,
             ...motherLanguageFilter,
             ...learningLanguageFilter
@@ -137,23 +144,27 @@ export const getAllPostByView = catchAsync(
 
         res.status(StatusCodes.OK).send(post)
     }
-)
 
-export const getAllPostByNew = catchAsync(
+//refactoring-required
+export const getAllPostByNew =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const searchKeyword = req.query.searchKeyword || ''
         const motherLanguage = req.query.motherLanguage || ''
         const learningLanguage = req.query.learningLanguage || ''
+        const university = req.currentUser?.university
 
         const user = await User.findOne({ name: { $regex: searchKeyword as string, $options: 'i' } })
+        const userUniversity = await User.find({ university: university as string })
         const userMotherLanguage = await Profile.find({ motherLanguage: motherLanguage as string })
         const userLearningLanguage = await Profile.find({ learningLanguage: learningLanguage as string })
 
+        const universityFilter = university ? { user: userUniversity } : {}
         const userFilter = searchKeyword ? { user } : {}
         const motherLanguageFilter = motherLanguage ? { profile: userMotherLanguage } : {}
         const learningLanguageFilter = learningLanguage ? { profile: userLearningLanguage } : {}
 
         const post = await Post.find({
+            ...universityFilter,
             ...userFilter,
             ...motherLanguageFilter,
             ...learningLanguageFilter
@@ -167,9 +178,9 @@ export const getAllPostByNew = catchAsync(
 
         res.status(StatusCodes.OK).send(post)
     }
-)
 
-export const deletePost = catchAsync(
+
+export const deletePost =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const post = await Post.findOne({ _id: req.params.postId })
@@ -178,7 +189,7 @@ export const deletePost = catchAsync(
             throw new NotFoundError()
         }
 
-        const user = await User.findOne({ _id: req.currentUser!.id })
+        const user = await User.findOne({ _id: req.currentUser?.id })
 
         const hit = await Hit.findOne({
             post: req.params.postId
@@ -186,7 +197,7 @@ export const deletePost = catchAsync(
 
         await hit?.remove()
 
-        if (post.user.toString() !== req.currentUser!.id) {
+        if (post.user.toString() !== req.currentUser?.id) {
             if (user?.isAdmin) {
                 await post.remove()
             } else {
@@ -198,9 +209,9 @@ export const deletePost = catchAsync(
 
         res.status(StatusCodes.OK).send({})
     }
-)
 
-export const likePost = catchAsync(
+
+export const likePost =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const post = await Post.findById(req.params.postId)
@@ -210,20 +221,20 @@ export const likePost = catchAsync(
         }
 
         const isLiked =
-            post.likes.filter(like => like.user.toString() === req.currentUser!.id).length > 0;
+            post.likes.filter(like => like.user.toString() === req.currentUser?.id).length > 0
 
         if (isLiked) {
             throw new BadRequestError("Post already liked")
         }
 
-        await post.likes.unshift({ user: req.currentUser!.id });
-        await post.save();
+        await post.likes.unshift({ user: req.currentUser!.id })
+        await post.save()
 
         res.status(StatusCodes.OK).send({ post })
     }
-)
 
-export const unlikePost = catchAsync(
+
+export const unlikePost =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const post = await Post.findById(req.params.postId)
@@ -239,11 +250,10 @@ export const unlikePost = catchAsync(
             throw new BadRequestError("Post not liked before")
         }
 
-        const index = post.likes.map(like => like.user.toString()).indexOf(req.currentUser!.id);
+        const index = post.likes.map(like => like.user.toString()).indexOf(req.currentUser!.id)
 
-        await post.likes.splice(index, 1);
-        await post.save();
+        await post.likes.splice(index, 1)
+        await post.save()
 
-        res.status(StatusCodes.OK).send({ post })
+        res.status(StatusCodes.OK).send({})
     }
-)

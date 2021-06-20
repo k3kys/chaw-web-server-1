@@ -1,6 +1,18 @@
 import mongoose from "mongoose"
 
-interface ProfileModel extends mongoose.Model<ProfileDoc> {}
+export interface ProfileAttrs {
+    user: string,
+    image: string | undefined,
+    motherCountry: string,
+    motherLanguage: [string],
+    learningLanguage: [string],
+    intro: string,
+    social: {
+        facebook?: string | undefined,
+        instagram?: string | undefined
+    },
+    university: string
+}
 
 export interface ProfileDoc extends mongoose.Document {
     user: string,
@@ -14,6 +26,10 @@ export interface ProfileDoc extends mongoose.Document {
         instagram?: string | undefined
     },
     university: string
+}
+
+interface ProfileModel extends mongoose.Model<ProfileDoc> {
+    build(attrs: ProfileAttrs): ProfileDoc,
 }
 
 const profileSchema = new mongoose.Schema<ProfileDoc>({
@@ -54,6 +70,10 @@ const profileSchema = new mongoose.Schema<ProfileDoc>({
 }, {
     timestamps: true
 })
+
+profileSchema.statics.build = (attrs: ProfileAttrs) => {
+    return new Profile(attrs)
+}
 
 const Profile = mongoose.model<ProfileDoc, ProfileModel>("Profile", profileSchema)
 

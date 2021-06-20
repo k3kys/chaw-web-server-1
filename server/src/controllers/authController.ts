@@ -1,15 +1,16 @@
-import { Gmailer } from "../services"
-import { BadRequestError, NotAuthorizedError, NotFoundError } from "../errors"
-import { User } from "../models/user"
-import { catchAsync } from "../middlewares"
 import { Request, Response, NextFunction } from "express"
+import { BadRequestError, NotAuthorizedError, NotFoundError } from "../errors"
+
+import { User } from "../models/user"
+import { Gmailer } from "../services"
+
 import jwt from "jsonwebtoken"
 import { StatusCodes } from "http-status-codes"
 
 const generateRandom = function (min: number, max: number) {
-    const ranNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    const ranNum = Math.floor(Math.random() * (max - min + 1)) + min
 
-    return ranNum;
+    return ranNum
 }
 
 const generateToken = (id?: string, email?: string, isAdmin?: boolean, university?: string): string => {
@@ -19,11 +20,10 @@ const generateToken = (id?: string, email?: string, isAdmin?: boolean, universit
         {
             expiresIn: process.env.JWT_EXPIRES_IN!,
         }
-    );
-};
+    )
+}
 
-
-export const signup = catchAsync(
+export const signup =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const { name, email, password, confirmPassword, university } = req.body
@@ -46,18 +46,18 @@ export const signup = catchAsync(
 
         req.session = {
             jwt: userJwt,
-        };
+        }
 
-        res.status(StatusCodes.OK).send(user);
-    },
-);
+        res.status(StatusCodes.OK).send(user)
+    }
 
-export const signin = catchAsync(
+
+export const signin =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const { email, password } = req.body
 
-        const existingUser = await User.findOne({ email }).select('+password');
+        const existingUser = await User.findOne({ email }).select('+password')
 
         if (!existingUser) {
             throw new BadRequestError("Invalid credentials")
@@ -73,48 +73,47 @@ export const signin = catchAsync(
 
         req.session = {
             jwt: userJwt,
-        };
+        }
 
-        res.status(StatusCodes.OK).send(existingUser);
-    })
-
-export const signout = catchAsync(
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        req.session = null;
-
-        res.send({});
+        res.status(StatusCodes.OK).send(existingUser)
     }
-)
 
-export const currentUser = catchAsync(
+export const signout =
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        req.session = null
+
+        res.send({})
+    }
+
+export const currentUser =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         res.send({ currentUser: req.currentUser || null })
     }
-)
 
-export const forgotPassword = catchAsync(
+
+export const forgotPassword =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const { email } = req.body
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email })
 
         if (!user) {
             throw new NotFoundError()
         }
 
-        const resetToken = generateToken(user.email);
+        const resetToken = generateToken(user.email)
 
-        user.passwordResetToken = resetToken;
+        user.passwordResetToken = resetToken
 
-        await user.save({ validateBeforeSave: false });
+        await user.save({ validateBeforeSave: false })
 
         const resetURL = `http://localhost:3000/resetPassword/`
         const message = `<a href=${resetURL}>비밀번호 리셋하기</a>`
 
         const gmail = new Gmailer()
 
-        gmail.sendMessage({
+        await gmail.sendMessage({
             email: user.email,
             subject: "Chaw: 비밀번호 리셋을 원하시나요?",
             message
@@ -122,11 +121,11 @@ export const forgotPassword = catchAsync(
 
         res.status(StatusCodes.OK).json({ resetToken: resetToken })
     }
-)
 
-export const resetPassword = catchAsync(
+
+export const resetPassword =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await User.findOne({ passwordResetToken: req.params.resetToken });
+        const user = await User.findOne({ passwordResetToken: req.params.resetToken })
 
         if (!user) {
             throw new BadRequestError("Token is invalid or has expired")
@@ -142,15 +141,15 @@ export const resetPassword = catchAsync(
 
         req.session = {
             jwt: userJwt,
-        };
+        }
 
         res.status(StatusCodes.OK).json({
             token: userJwt,
-        });
+        })
     }
-)
 
-export const sendEmail = catchAsync(
+
+export const sendEmail =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const number = generateRandom(111111, 999999)
@@ -175,14 +174,13 @@ export const sendEmail = catchAsync(
             data: { number, email }
         })
     }
-);
 
-export const updatePassword = catchAsync(
+export const updatePassword =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const { passwordCurrent, password, confirmPassword } = req.body
 
-        const user = await User.findById(req.currentUser!.id).select('+password')
+        const user = await User.findById(req.currentUser?.id).select('+password')
 
         const passwordsMatch = await User.correctPassword(passwordCurrent, user!.password)
 
@@ -199,7 +197,7 @@ export const updatePassword = catchAsync(
 
         req.session = {
             jwt: userJwt,
-        };
+        }
 
         res.status(StatusCodes.OK).send(user)
-    })
+    }

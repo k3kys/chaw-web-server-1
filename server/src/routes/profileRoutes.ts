@@ -10,4 +10,4 @@ router.route("/deleteProfile/:profileId").delete(profileController.deleteProfile
 
 router.route("/getProfile/:profileId").get(profileController.getProfile)
 
-export default router;
+export default router

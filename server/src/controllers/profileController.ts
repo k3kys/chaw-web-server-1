@@ -1,11 +1,10 @@
-import { BadRequestError, NotFoundError } from "../errors";
+import { BadRequestError, NotFoundError } from "../errors"
 import { Request, Response, NextFunction } from "express"
 import { Profile } from "../models/profile"
 import { User } from "../models/user"
 import { StatusCodes } from "http-status-codes"
-import { catchAsync } from "../middlewares"
 
-export const createProfile = catchAsync(
+export const createProfile =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const user = await User.findOne({ _id: req.params.userId })
@@ -23,7 +22,7 @@ export const createProfile = catchAsync(
         const { image, motherCountry, motherLanguage,
             learningLanguage, intro, facebook, instagram } = req.body
 
-        const profile = await Profile.create({
+        const profile = Profile.build({
             user: user._id,
             image: image,
             motherCountry: motherCountry,
@@ -37,12 +36,12 @@ export const createProfile = catchAsync(
             university: user.university
         })
 
+        await profile.save()
+
         res.status(StatusCodes.OK).send(profile)
     }
-)
 
-
-export const updateProfile = catchAsync(
+export const updateProfile =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const profile = await Profile.findOne({ _id: req.params.profileId })
@@ -65,11 +64,10 @@ export const updateProfile = catchAsync(
             { new: true }
         )
 
-        res.status(StatusCodes.OK).send(updatedProfile);
+        res.status(StatusCodes.OK).send(updatedProfile)
     }
-)
 
-export const getProfile = catchAsync(
+export const getProfile =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const profile = await Profile.findOne({ _id: req.params.profileId })
@@ -78,21 +76,20 @@ export const getProfile = catchAsync(
             throw new NotFoundError()
         }
 
-        res.status(StatusCodes.OK).send(profile);
+        res.status(StatusCodes.OK).send(profile)
     }
-)
 
-export const deleteProfile = catchAsync(
+
+export const deleteProfile =
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
         const profile = await Profile.findOne({ _id: req.params.profileId })
 
-        if(!profile) {
+        if (!profile) {
             throw new NotFoundError()
         }
 
-        await profile.remove();
+        await profile.remove()
 
-        res.status(StatusCodes.OK).send({});
+        res.status(StatusCodes.OK).send({})
     }
-)

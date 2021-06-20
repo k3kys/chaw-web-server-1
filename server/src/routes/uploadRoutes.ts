@@ -5,4 +5,4 @@ const router = express.Router()
 
 router.route("/s3").post(uploadS3.single("image"), uploadController.fileUpload)
 
-export default router;
+export default router

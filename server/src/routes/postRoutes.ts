@@ -19,4 +19,4 @@ router.route("/likePost/:postId").post(currentUser, postController.likePost)
 
 router.route("/unlikePost/:postId").post(currentUser, postController.unlikePost)
 
-export default router;
+export default router

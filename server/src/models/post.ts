@@ -1,7 +1,11 @@
 import mongoose from "mongoose"
 import { ProfileDoc } from "./profile"
+import { UserDoc } from "./user"
 
-interface PostModel extends mongoose.Model<PostDoc> { }
+export interface PostAttrs {
+    user: UserDoc | string
+    profile: ProfileDoc | string,
+}
 
 export interface PostDoc extends mongoose.Document {
     user: any,
@@ -13,6 +17,11 @@ export interface PostDoc extends mongoose.Document {
     ],
     viewCount: number
 }
+
+interface PostModel extends mongoose.Model<PostDoc> {
+    build(attrs: PostAttrs): PostDoc
+}
+
 
 const postSchema = new mongoose.Schema<PostDoc>({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -32,6 +41,10 @@ const postSchema = new mongoose.Schema<PostDoc>({
 }, {
     timestamps: true
 })
+
+postSchema.statics.build = (attrs: PostAttrs) => {
+    return new Post(attrs)
+}
 
 const Post = mongoose.model<PostDoc, PostModel>("Post", postSchema)
 

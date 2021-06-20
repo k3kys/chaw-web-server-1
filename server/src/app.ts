@@ -20,7 +20,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDefinition))
 app.use(express.json())
 app.use(cookieParser())
 
-app.set('trust proxy', true);
+app.set('trust proxy', true)
 app.use(cookieSession({ signed: false }))
 
 app.get('/', (req, res) => {
